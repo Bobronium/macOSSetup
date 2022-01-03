@@ -65,17 +65,17 @@ apps:
       action: install 
 ```
 ### Keep iTerm2 settings in git
-https://github.com/fnichol/macosx-iterm2-settings
+- https://github.com/fnichol/macosx-iterm2-settings
 
 ### Install apps from App Store
 This script uses apple script language instead of CLI tools to install apps, this might allow to install iOS/iPadOS apps as well
-https://gist.github.com/benbalter/3db34485f49006c60129
+- https://gist.github.com/benbalter/3db34485f49006c60129
 
 ### Configuring shortcuts
-[DefaultKeyBinding.dict](http://web.archive.org/web/20160314030051/http://osxnotes.net/keybindings.html)
-[Setting Keyboard Shortcuts from Terminal in macOS](https://www.ryanmo.co/2017/01/05/setting-keyboard-shortcuts-from-terminal-in-macos/)
-[Where are keyboard shortcuts stored (for backup and sync purposes)?](https://apple.stackexchange.com/questions/87619/where-are-keyboard-shortcuts-stored-for-backup-and-sync-purposes)
-[Default Mac OS X System Key Bindings](https://www.hcs.harvard.edu/~jrus/site/system-bindings.html)
-[Creating keyboard shortcuts on the command line](http://hints.macworld.com/article.php?story=20131123074223584)
-[NSStandardKeyBindingResponding](https://developer.apple.com/documentation/appkit/nsstandardkeybindingresponding)
-[Cocoa Event Handling Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/EventOverview/TextDefaultsBindings/TextDefaultsBindings.html)
+- [DefaultKeyBinding.dict](http://web.archive.org/web/20160314030051/http://osxnotes.net/keybindings.html)
+- [Setting Keyboard Shortcuts from Terminal in macOS](https://www.ryanmo.co/2017/01/05/setting-keyboard-shortcuts-from-terminal-in-macos/)
+- [Where are keyboard shortcuts stored (for backup and sync purposes)?](https://apple.stackexchange.com/questions/87619/where-are-keyboard-shortcuts-stored-for-backup-and-sync-purposes)
+- [Default Mac OS X System Key Bindings](https://www.hcs.harvard.edu/~jrus/site/system-bindings.html)
+- [Creating keyboard shortcuts on the command line](http://hints.macworld.com/article.php?story=20131123074223584)
+- [NSStandardKeyBindingResponding](https://developer.apple.com/documentation/appkit/nsstandardkeybindingresponding)
+- [Cocoa Event Handling Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/EventOverview/TextDefaultsBindings/TextDefaultsBindings.html)
