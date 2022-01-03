@@ -1,4 +1,4 @@
-# macOSSetup
+# mac*OSS*etup
 
 # Usage
 Current version does in orded:
