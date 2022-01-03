@@ -64,3 +64,5 @@ apps:
       target: DifferentApp*.pkg
       action: install 
 ```
+### Keep iTerm2 settings in git
+https://github.com/fnichol/macosx-iterm2-settings
