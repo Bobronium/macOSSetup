@@ -91,7 +91,7 @@ if ! test -d "$HOME/.oh-my-zsh)"; then
   already_installed
 else
   installing
-  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
   install_status
 fi
 
