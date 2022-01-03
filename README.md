@@ -66,3 +66,7 @@ apps:
 ```
 ### Keep iTerm2 settings in git
 https://github.com/fnichol/macosx-iterm2-settings
+
+### Install apps from App Store
+This script uses apple script language instead of CLI tools to install apps, this might allow to install iOS/iPadOS apps as well
+https://gist.github.com/benbalter/3db34485f49006c60129
