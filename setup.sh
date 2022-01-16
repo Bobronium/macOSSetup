@@ -87,7 +87,7 @@ else
 fi
 
 TARGET="Oh My ZSH"
-if ! test -d "$HOME/.oh-my-zsh)"; then
+if ! test -d "$HOME/.oh-my-zsh"; then
   already_installed
 else
   installing
