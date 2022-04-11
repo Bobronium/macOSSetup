@@ -1,16 +1,16 @@
-# mac*OSS*etup
+# mac**OSS**etup
+Idempotent macOS configuration tool
 
 # Usage
-Current version does in orded:
-- Configures sudo access with Touch ID
-- Installs: 
-  - Command Line Tools for Xcode
-  - Oh My ZSH
-  - Homebrew
-
-
+Current version works like this:
 ```shell
-bash <(curl -fsSL https://raw.githubusercontent.com/Bobronium/macOSSetup/HEAD/setup.sh) -v
+$ bash <(curl -fsSL https://raw.githubusercontent.com/Bobronium/macOSSetup/HEAD/setup.sh) -v
+
+Already configured: sudo access with Touch ID
+Already installed: Command Line Tools for Xcode
+Already installed: Oh My ZSH
+Already installed: Homebrew
+All done! ✨ 🍰 ✨
 ```
 
 # Wanted features set
