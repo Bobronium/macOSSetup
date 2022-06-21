@@ -74,12 +74,12 @@ else
   # find the CLI Tools update
   cmd_line_tools=$(
     softwareupdate -l |
-     grep "\*.*Command Line" |
-      head -n 1 |
-       awk -F"*" '{print $2}' |
-        sed -e 's/^ *//' |
-         sed 's/Label: //g' |
-           tr -d '\n'
+      grep "\*.*Command Line" |
+        head -n 1 |
+          awk -F"*" '{print $2}' |
+            sed -e 's/^ *//' |
+              sed 's/Label: //g' |
+                tr -d '\n'
   )
   # install it
   softwareupdate -i "$cmd_line_tools"
@@ -104,6 +104,46 @@ else
   NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null
 install_status
 fi
+
+
+TARGET="pyenv"
+if pyenv --version > /dev/null 2>&1; then
+  already_installed
+else
+  installing
+  brew install pyenv
+install_status
+fi
+
+TARGET="Python3.10"
+if pyenv versions | grep 3.10 > /dev/null 2>&1; then
+  already_installed
+else
+  installing
+  pyenv install 3.10:latest
+  version=$(pyenv versions | grep -oE "3.10.\d{1,}")
+  pyenv global | xargs pyenv global "$version"
+install_status
+fi
+
+TARGET="pipx"
+if pipx --version > /dev/null 2>&1; then
+  already_installed
+else
+  installing
+  $(pyenv which python3.10) -m pip install pipx-in-pipx
+install_status
+fi
+
+TARGET="npm"
+if npm --version > /dev/null 2>&1; then
+  already_installed
+else
+  installing
+  brew install npm
+install_status
+fi
+
 
 echo "All done! ✨ 🍰 ✨"
 
