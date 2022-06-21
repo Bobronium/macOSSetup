@@ -1,8 +1,11 @@
 # mac**OSS**etup
+
 Idempotent macOS configuration tool
 
 # Usage
+
 Current version works like this:
+
 ```shell
 $ bash <(curl -fsSL https://raw.githubusercontent.com/Bobronium/macOSSetup/HEAD/setup.sh) -v
 
@@ -10,20 +13,30 @@ Already configured: sudo access with Touch ID
 Already installed: Command Line Tools for Xcode
 Already installed: Oh My ZSH
 Already installed: Homebrew
+Already installed: pyenv
+Already installed: Python3.10
+Already installed: pipx
+Already installed: npm
 All done! ✨ 🍰 ✨
 ```
 
 # Wanted features set
+
 ## Install/update
+
 - Anything from Homebrew
 - Apps from App Store
 - Apps from iOS/iPadOS App Store
 - Apps from any source (web, ?) (.zip, .dmg) (drag-n-drop, installers)
+- Dotfiles
+- Terminal
 
 ## A lot more TBD
 
 # Cheatsheat
+
 ### Install and app form .dmg
+
 ```bash
 # usage: installdmg https://example.com/path/to/pkg.dmg
 function installdmg {
@@ -43,12 +56,15 @@ function installdmg {
     set +x
 }
 ```
+
 *Caveats*:
+
 - If .dmg contains an .app installer, it'll still only copy it to /Applications instead of installing it
 - Some packages are distributed in .pkg without .dmg
 - Some packages are distributed in .zip containing the .app/.pkg
 
 Solution to all these caveats would be a config, where apps with their sources could be leasted and described, e.g.:
+
 ```yaml
 apps:
   web:
@@ -64,14 +80,19 @@ apps:
       target: DifferentApp*.pkg
       action: install 
 ```
+
 ### Keep iTerm2 settings in git
-- https://github.com/fnichol/macosx-iterm2-settings
+
+- <https://github.com/fnichol/macosx-iterm2-settings>
 
 ### Install apps from App Store
+
 This script uses apple script language instead of CLI tools to install apps, this might allow to install iOS/iPadOS apps as well
-- https://gist.github.com/benbalter/3db34485f49006c60129
+
+- <https://gist.github.com/benbalter/3db34485f49006c60129>
 
 ### Configuring shortcuts
+
 - [DefaultKeyBinding.dict](http://web.archive.org/web/20160314030051/http://osxnotes.net/keybindings.html)
 - [Setting Keyboard Shortcuts from Terminal in macOS](https://www.ryanmo.co/2017/01/05/setting-keyboard-shortcuts-from-terminal-in-macos/)
 - [Where are keyboard shortcuts stored (for backup and sync purposes)?](https://apple.stackexchange.com/questions/87619/where-are-keyboard-shortcuts-stored-for-backup-and-sync-purposes)
