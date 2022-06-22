@@ -1,11 +1,14 @@
 # mac**OSS**etup
 
-Idempotent macOS configuration tool
+Ultimate macOS configuration tool
 
 # Usage
 
-Current version works like this:
+In its current state it's just a simple bash script that installs some essential tools for my workflow.
 
+But it's just a temporary placeholder, while I'm building a much more powerfull beast.
+
+Currently you can use it like this (no configuration, it's dumb):
 ```shell
 $ bash <(curl -fsSL https://raw.githubusercontent.com/Bobronium/macOSSetup/HEAD/setup.sh) -v
 
@@ -30,8 +33,16 @@ All done! ✨ 🍰 ✨
 - Apps from any source (web, ?) (.zip, .dmg) (drag-n-drop, installers)
 - Dotfiles
 - Terminal
+- defaults
+- other configs
 
-## A lot more TBD
+
+## Sync
+- Capture current state of things on working system, including changed `defaults`, installed apps, etc.
+
+Check latest ideas and thoughts in https://github.com/Bobronium/macOSSetup/blob/master/src/macossetup/cli.py docs.
+##### A lot more TBD
+
 
 # Cheatsheat
 
