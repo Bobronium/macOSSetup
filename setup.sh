@@ -25,6 +25,19 @@ YELLOW="\e[93m"
 MAGENTA="\e[95m"
 ENDCOLOR="\e[0m"
 
+hide_output() {
+  local error_output
+  error_output=$("$@" 2>&1 > /dev/null)
+  local exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    error "${RED}Error occurred while running:${ENDCOLOR} $*"
+    error "$error_output"
+    return $exit_code
+  fi
+
+  return 0  # Return zero exit code to indicate success
+}
+
 already_installed() { log "${MAGENTA}Already installed:${ENDCOLOR} $TARGET"; }
 installing() { log "${YELLOW}Installing:${ENDCOLOR} $TARGET"; }
 install_status() {
@@ -44,6 +57,7 @@ config_status() {
     error "${RED}Failed to configure:${ENDCOLOR} $TARGET"
   fi;
   }
+updating() { log "${YELLOW}Updating:${ENDCOLOR} $1 -> $2"; }
 
 TARGET="sudo access with Touch ID"
 sudo_file="/etc/pam.d/sudo"
@@ -131,43 +145,100 @@ install_status
 fi
 
 
-TARGET="pyenv"
-if pyenv --version > /dev/null 2>&1; then
+TARGET="uv"
+if uv --version > /dev/null 2>&1; then
   already_installed
 else
   installing
-  brew install pyenv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  source "$HOME/.cargo/env"
 install_status
 fi
 
-TARGET="Python3.10"
-if pyenv versions | grep 3.10 > /dev/null 2>&1; then
-  already_installed
-else
-  installing
-  pyenv install 3.10:latest
-  version=$(pyenv versions | grep -oE "3.10.\d{1,}")
-  pyenv global | xargs pyenv global "$version"
-install_status
-fi
 
-TARGET="pipx"
-if pipx --version > /dev/null 2>&1; then
-  already_installed
-else
-  installing
-  $(pyenv which python3.10) -m pip install pipx-in-pipx
-install_status
-fi
 
 TARGET="npm"
 if npm --version > /dev/null 2>&1; then
   already_installed
 else
   installing
-  brew install npm
+  hide_output brew install npm
 install_status
 fi
+
+
+python_list_output=$(uv python list)
+uv_installed_versions=$(echo "$python_list_output" | grep -E '\.local/share/uv/' | awk '{print $1}' | sed 's/^cpython-//' | cut -d'-' -f1 | cut -d'.' -f1,2 | sort -V | uniq)
+uv_installed_full_versions=$(echo "$python_list_output" | grep -E '\.local/share/uv/' | awk '{print $1}' | sed 's/^cpython-//' | cut -d'-' -f1)
+
+
+make_python_symlinks() {
+  if [[ ! -d ~/.local/share/uv/bin ]]; then
+    mkdir ~/.local/share/uv/bin
+  fi
+  ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python"
+  ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python3"
+  ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python$short_version"
+  if ! grep -q ~/.local/share/uv/bin ~/.zprofile; then
+    echo "export PATH=\"$HOME/.local/share/uv/bin/:$PATH\"" >> ~/.zprofile
+  fi
+}
+
+install_or_update_python_versions() {
+  # Extract all versions (not just those with <download available>)
+  all_versions=$(echo "$python_list_output" | awk '{print $1}' | sort -rV)
+  selected_versions=()
+  seen_versions=()
+
+  for full_version in $all_versions; do
+    short_version=$(echo "$full_version" | cut -d'.' -f1,2)
+    for processed_version in "${seen_versions[@]}"; do
+      if [[ "$processed_version" == "$short_version" ]]; then
+        already_processed=true
+        break
+      fi
+    done
+    seen_versions+=("$short_version")
+    if [[ $already_processed ]]; then
+      unset already_processed
+      continue
+    fi
+    selected_versions+=("$full_version")
+
+  done
+
+  sorted_versions=$(printf "%s\n" "${selected_versions[@]}" | sort -V)
+  for version_info in $sorted_versions; do
+    # Extract the Python major.minor version
+    full_version=$(echo "$version_info" | sed 's/^cpython-//' | cut -d'-' -f1)
+    short_version=$(echo "$full_version" | cut -d'.' -f1,2)
+    TARGET="Python $short_version"
+
+    if echo "$python_list_output" | grep -q "$version_info.*<download available>"; then
+      # short version is already installed, but a newer version is available
+      if echo "$uv_installed_versions" | grep -q "^$short_version$"; then
+        current_installed=$(echo "$uv_installed_full_versions" | grep "^$short_version" | sort -V | tail -n 1)
+        if [ "$current_installed" != "$full_version" ]; then
+          updating "$current_installed" "$full_version"
+          hide_output uv python install "$full_version"
+          make_python_symlinks
+          install_status
+        else
+          already_installed
+        fi
+      else
+        installing
+        hide_output uv python install "$version_info"
+        make_python_symlinks
+        install_status
+      fi
+    else
+      already_installed
+    fi
+  done
+}
+
+install_or_update_python_versions
 
 
 echo "All done! ✨ 🍰 ✨"
