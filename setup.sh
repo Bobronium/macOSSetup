@@ -4,12 +4,13 @@
 verbose=$VERBOSE
 error() { printf "%b\n" "$*" >&2; }
 
-while getopts "v" OPTION
-do
+while getopts "v" OPTION; do
   case $OPTION in
-    v) verbose=true ;;
-    *) error "usage: $0 [-v]"
-       exit 1 ;;
+  v) verbose=true ;;
+  *)
+    error "usage: $0 [-v]"
+    exit 1
+    ;;
   esac
 done
 
@@ -27,7 +28,7 @@ ENDCOLOR="\e[0m"
 
 hide_output() {
   local error_output
-  error_output=$("$@" 2>&1 > /dev/null)
+  error_output=$("$@" 2>&1 >/dev/null)
   local exit_code=$?
   if [ $exit_code -ne 0 ]; then
     error "${RED}Error occurred while running:${ENDCOLOR} $*"
@@ -35,7 +36,7 @@ hide_output() {
     return $exit_code
   fi
 
-  return 0  # Return zero exit code to indicate success
+  return 0 # Return zero exit code to indicate success
 }
 
 already_installed() { log "${MAGENTA}Already installed:${ENDCOLOR} $TARGET"; }
@@ -45,8 +46,8 @@ install_status() {
     log "${GREEN}Installed:${ENDCOLOR} $TARGET"
   else
     error "${RED}Failed to install:${ENDCOLOR} $TARGET"
-  fi;
-  }
+  fi
+}
 
 already_configured() { log "${MAGENTA}Already configured:${ENDCOLOR} $TARGET"; }
 configuring() { log "${YELLOW}Configuring:${ENDCOLOR} $TARGET"; }
@@ -55,8 +56,8 @@ config_status() {
     log "${GREEN}Configured:${ENDCOLOR} $TARGET"
   else
     error "${RED}Failed to configure:${ENDCOLOR} $TARGET"
-  fi;
-  }
+  fi
+}
 updating() { log "${YELLOW}Updating:${ENDCOLOR} $1 -> $2"; }
 
 TARGET="sudo access with Touch ID"
@@ -68,10 +69,10 @@ sudo_local_file="/etc/pam.d/sudo_local"
 
 if [ ! -f "$sudo_template_file" ]; then
   # before macOS Sonoma
-  if ! grep "$touch_id_auth_option" $sudo_file > /dev/null; then
+  if ! grep "$touch_id_auth_option" $sudo_file >/dev/null; then
     configuring
     new_sudo_file_content=$(awk "$awk_command" $sudo_file)
-    if echo "$new_sudo_file_content" | grep "$touch_id_auth_option" > /dev/null; then
+    if echo "$new_sudo_file_content" | grep "$touch_id_auth_option" >/dev/null; then
       sudo bash -c $"printf \"%s\" \"$new_sudo_file_content\" > $sudo_file"
     else
       false
@@ -95,9 +96,8 @@ else
   fi
 fi
 
-
 TARGET="Command Line Tools for Xcode"
-if xcode-select -p > /dev/null 2>&1; then
+if xcode-select -p >/dev/null 2>&1; then
   already_installed
 else
   installing
@@ -110,11 +110,11 @@ else
   cmd_line_tools=$(
     softwareupdate -l |
       grep "\*.*Command Line" |
-        head -n 1 |
-          awk -F"*" '{print $2}' |
-            sed -e 's/^ *//' |
-              sed 's/Label: //g' |
-                tr -d '\n'
+      head -n 1 |
+      awk -F"*" '{print $2}' |
+      sed -e 's/^ *//' |
+      sed 's/Label: //g' |
+      tr -d '\n'
   )
   # install it
   softwareupdate -i "$cmd_line_tools"
@@ -132,45 +132,40 @@ else
 fi
 
 TARGET="Homebrew"
-if brew --version > /dev/null 2>&1; then
+if brew --version >/dev/null 2>&1; then
   already_installed
 else
   installing
-  sudo true  # get sudo access, as the brew installation script won't request it in NONINTERACTIVE mode
+  sudo true # get sudo access, as the brew installation script won't request it in NONINTERACTIVE mode
   NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   BREW_ENVIRONMENT_VARIABLES=$(/opt/homebrew/bin/brew shellenv)
-  printf "\n%s\n" "$BREW_ENVIRONMENT_VARIABLES" >> ~/.zprofile
+  printf "\n%s\n" "$BREW_ENVIRONMENT_VARIABLES" >>~/.zprofile
   bash -c "$BREW_ENVIRONMENT_VARIABLES"
-install_status
+  install_status
 fi
 
-
 TARGET="uv"
-if uv --version > /dev/null 2>&1; then
+if uv --version >/dev/null 2>&1; then
   already_installed
 else
   installing
   curl -LsSf https://astral.sh/uv/install.sh | sh
   source "$HOME/.cargo/env"
-install_status
+  install_status
 fi
 
-
-
 TARGET="npm"
-if npm --version > /dev/null 2>&1; then
+if npm --version >/dev/null 2>&1; then
   already_installed
 else
   installing
   hide_output brew install npm
-install_status
+  install_status
 fi
-
 
 python_list_output=$(uv python list)
 uv_installed_versions=$(echo "$python_list_output" | grep -E '\.local/share/uv/' | awk '{print $1}' | sed 's/^cpython-//' | cut -d'-' -f1 | cut -d'.' -f1,2 | sort -V | uniq)
 uv_installed_full_versions=$(echo "$python_list_output" | grep -E '\.local/share/uv/' | awk '{print $1}' | sed 's/^cpython-//' | cut -d'-' -f1)
-
 
 make_python_symlinks() {
   if [[ ! -d ~/.local/share/uv/bin ]]; then
@@ -180,7 +175,7 @@ make_python_symlinks() {
   ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python3"
   ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python$short_version"
   if ! grep -q ~/.local/share/uv/bin ~/.zprofile; then
-    echo "export PATH=\"$HOME/.local/share/uv/bin/:$PATH\"" >> ~/.zprofile
+    echo "export PATH=\"$HOME/.local/share/uv/bin/:$PATH\"" >>~/.zprofile
   fi
 }
 
@@ -240,6 +235,4 @@ install_or_update_python_versions() {
 
 install_or_update_python_versions
 
-
 echo "All done! ✨ 🍰 ✨"
-
