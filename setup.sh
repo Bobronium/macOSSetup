@@ -101,7 +101,10 @@ if brew --version > /dev/null 2>&1; then
 else
   installing
   sudo true  # get sudo access, as the brew installation script won't request it in NONINTERACTIVE mode
-  NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" > /dev/null
+  NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  BREW_ENVIRONMENT_VARIABLES=$(/opt/homebrew/bin/brew shellenv)
+  printf "\n%s\n" "$BREW_ENVIRONMENT_VARIABLES" >> ~/.zprofile
+  bash -c "$BREW_ENVIRONMENT_VARIABLES"
 install_status
 fi
 
