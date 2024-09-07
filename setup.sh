@@ -49,18 +49,36 @@ TARGET="sudo access with Touch ID"
 sudo_file="/etc/pam.d/sudo"
 touch_id_auth_option="auth       sufficient     pam_tid.so"
 awk_command=$"NR==2{print \"$touch_id_auth_option\"}1"
-if ! grep "$touch_id_auth_option" $sudo_file > /dev/null; then
-  configuring
-  new_sudo_file_content=$(awk "$awk_command" $sudo_file)
-  if echo "$new_sudo_file_content" | grep "$touch_id_auth_option" > /dev/null; then
-    sudo bash -c $"printf \"%s\" \"$new_sudo_file_content\" > $sudo_file"
-  else
-    false
-  fi
-  config_status
+sudo_template_file="/etc/pam.d/sudo_local.template"
+sudo_local_file="/etc/pam.d/sudo_local"
 
+if [ ! -f "$sudo_template_file" ]; then
+  # before macOS Sonoma
+  if ! grep "$touch_id_auth_option" $sudo_file > /dev/null; then
+    configuring
+    new_sudo_file_content=$(awk "$awk_command" $sudo_file)
+    if echo "$new_sudo_file_content" | grep "$touch_id_auth_option" > /dev/null; then
+      sudo bash -c $"printf \"%s\" \"$new_sudo_file_content\" > $sudo_file"
+    else
+      false
+    fi
+    config_status
+
+  else
+    already_configured
+  fi
 else
-  already_configured
+  # macOS Sonoma or later
+  if [ ! -f "$sudo_local_file" ]; then
+    sudo cp "$sudo_template_file" "$sudo_local_file"
+  fi
+  if grep -q "^#${touch_id_auth_option}" "$sudo_local_file"; then
+    configuring
+    sudo sed -i '' "s/^#${touch_id_auth_option}/${touch_id_auth_option}/" "$sudo_local_file"
+    config_status
+  else
+    already_configured
+  fi
 fi
 
 
