@@ -5,8 +5,9 @@ verbose=$VERBOSE
 while getopts "v" OPTION
 do
   case $OPTION in
-    v) verbose=true
-       ;;
+    v) verbose=true ;;
+    *) error "usage: $0 [-v]"
+       exit 1 ;;
   esac
 done
 
@@ -84,6 +85,7 @@ else
   # install it
   softwareupdate -i "$cmd_line_tools"
   install_status
+  rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 fi
 
 TARGET="Oh My ZSH"
