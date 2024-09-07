@@ -2,6 +2,8 @@
 
 # shellcheck disable=SC2153
 verbose=$VERBOSE
+error() { printf "%b\n" "$*" >&2; }
+
 while getopts "v" OPTION
 do
   case $OPTION in
@@ -12,7 +14,7 @@ do
 done
 
 if [ "$verbose" ]; then
-  log() { printf "$@\n"; }
+  log() { printf "%b\n" "$*"; }
 else
   log() { :; }
 fi
@@ -29,7 +31,7 @@ install_status() {
   if [[ $? == 0 ]]; then
     log "${GREEN}Installed:${ENDCOLOR} $TARGET"
   else
-    log "${RED}Failed to install:${ENDCOLOR} $TARGET"
+    error "${RED}Failed to install:${ENDCOLOR} $TARGET"
   fi;
   }
 
@@ -39,7 +41,7 @@ config_status() {
   if [[ $? == 0 ]]; then
     log "${GREEN}Configured:${ENDCOLOR} $TARGET"
   else
-    log "${RED}Failed to configure:${ENDCOLOR} $TARGET"
+    error "${RED}Failed to configure:${ENDCOLOR} $TARGET"
   fi;
   }
 
