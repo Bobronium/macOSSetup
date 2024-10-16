@@ -16,11 +16,15 @@ Already configured: sudo access with Touch ID
 Already installed: Command Line Tools for Xcode
 Already installed: Oh My ZSH
 Already installed: Homebrew
-Already installed: pyenv
-Already installed: Python3.10
-Already installed: pipx
+Already installed: uv
 Already installed: npm
+Already installed: Python 3.8
+Already installed: Python 3.9
+Already installed: Python 3.10
+Already installed: Python 3.11
+Already installed: Python 3.12
 All done! ✨ 🍰 ✨
+
 ```
 
 # Wanted features set
