@@ -172,8 +172,12 @@ make_python_symlinks() {
     ln -sf "$bin" "$HOME/.local/share/uv/bin/$(basename "$bin")"
   done
 
-  if ! grep -q ~/.local/share/uv/bin ~/.zprofile; then
-    echo "export PATH=\"$HOME/.local/share/uv/bin/:$PATH\"" >>~/.zprofile
+  local new_path
+  # shellcheck disable=SC2016
+  new_path='"$HOME/.local/share/uv/bin:$PATH"'
+  # shellcheck disable=SC2016
+  if ! grep -q '$HOME/.local/share/uv/bin' ~/.zshrc; then
+    echo "export PATH=$new_path" >>~/.zshrc
   fi
 }
 
