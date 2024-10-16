@@ -168,9 +168,9 @@ make_python_symlinks() {
   local short_version="$2"
 
   mkdir -p ~/.local/share/uv/bin
-  ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python"
-  ln -sf "$(uv python dir)/$version_info/bin/python3" "$HOME/.local/share/uv/bin/python3"
-  ln -sf "$(uv python dir)/$version_info/bin/python" "$HOME/.local/share/uv/bin/python$short_version"
+  for bin in "$(uv python dir)/$version_info/bin/"*; do
+    ln -sf "$bin" "$HOME/.local/share/uv/bin/$(basename "$bin")"
+  done
 
   if ! grep -q ~/.local/share/uv/bin ~/.zprofile; then
     echo "export PATH=\"$HOME/.local/share/uv/bin/:$PATH\"" >>~/.zprofile
@@ -233,6 +233,7 @@ install_or_update_python_versions() {
         print_status installed "Python $short_version"
       fi
     else
+      make_python_symlinks "$version_info" "$short_version"
       print_status already_installed "Python $short_version"
     fi
   done
