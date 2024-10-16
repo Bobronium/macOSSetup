@@ -183,7 +183,7 @@ make_python_symlinks() {
 
 install_or_update_python_versions() {
   local python_list_output
-  python_list_output=$(uv python list)
+  python_list_output=$(uv python list | grep cpython)
 
   local uv_installed_versions
   uv_installed_versions=$(echo "$python_list_output" | grep -E '\.local/share/uv/' | awk '{print $1}' | sed 's/^cpython-//' | cut -d'-' -f1 | cut -d'.' -f1,2 | sort -V | uniq)
@@ -228,6 +228,7 @@ install_or_update_python_versions() {
           make_python_symlinks "$version_info" "$short_version"
           print_status installed "Python $short_version"
         else
+          make_python_symlinks "$version_info" "$short_version"
           print_status already_installed "Python $short_version"
         fi
       else
