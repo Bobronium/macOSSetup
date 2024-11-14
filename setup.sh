@@ -244,6 +244,51 @@ install_or_update_python_versions() {
   done
 }
 
+restore_dotfiles() {
+  GITHUB_AUTH_KEY=$(security find-generic-password -w -a "$USER" -D "environment variable" -s GITHUBH_AUTH_KEY 2>/dev/null)
+
+  if [ -z "$GITHUB_AUTH_KEY" ]; then
+    return 0
+  fi
+
+  # Install GitHub CLI (gh) using Homebrew
+  if ! command -v gh &>/dev/null; then
+    print_status "installing" "GitHub CLI"
+    if hide_output brew install gh; then
+      print_status "installed" "GitHub CLI"
+    else
+      print_status "failed" "GitHub CLI"
+      return 1
+    fi
+  else
+    print_status "already_installed" "GitHub CLI"
+  fi
+
+  DOTFILES_DIR="$HOME/dev/meta/dotfiles"
+  if [ -d "$DOTFILES_DIR" ]; then
+    print_status already_installed "Bobronium/dotfiles"
+    return 0
+  fi
+  print_status installing "Bobronium/dotfiles"
+
+  mkdir -p "$HOME/dev/meta"
+  if ! echo "$GITHUB_AUTH_KEY" | gh auth login --with-token && gh repo clone Bobronium/dotfiles "$DOTFILES_DIR"; then
+    print_status failed "Bobronium/dotfiles"
+    return 1
+  fi
+    if hide_output uv run "$DOTFILES_DIR/main.py" restore; then
+    print_status configured "Bobronium/dotfiles"
+  else
+    print_status failed "Bobronium/dotfiles"
+    return 1
+  fi
+
+
+
+}
+
+
+
 main() {
   process_options "$@"
   configure_touch_id_for_sudo
@@ -253,6 +298,7 @@ main() {
   install_or_update_uv
   install_npm
   install_or_update_python_versions
+  restore_dotfiles
   echo "All done! ✨ 🍰 ✨"
 }
 
